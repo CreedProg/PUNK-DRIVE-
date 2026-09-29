@@ -1,0 +1,1994 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PUNK DRIVE</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#02030a;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+canvas{
+    display:block;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+#loading{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:#02030a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    color:#00f7ff;
+}
+
+#loading h1{
+    font-size:48px;
+    letter-spacing:8px;
+    text-shadow:
+        0 0 10px #00f7ff,
+        0 0 30px #00f7ff;
+}
+
+.loader-bar{
+    width:300px;
+    height:5px;
+    margin-top:25px;
+    background:#111;
+    overflow:hidden;
+}
+
+.loader-fill{
+    height:100%;
+    width:0%;
+    background:#00f7ff;
+    box-shadow:0 0 15px #00f7ff;
+    transition:.3s;
+}
+
+#loadingText{
+    margin-top:12px;
+    font-size:13px;
+    letter-spacing:3px;
+}
+
+/* =========================
+   MENU
+========================= */
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+
+    background:
+        radial-gradient(circle at center,
+        rgba(0,255,255,.12),
+        transparent 35%),
+        rgba(0,0,0,.55);
+
+    color:white;
+}
+
+.logo{
+    font-size:76px;
+    font-weight:900;
+    letter-spacing:14px;
+
+    color:#fff;
+
+    text-shadow:
+        0 0 5px #fff,
+        0 0 15px #00f7ff,
+        0 0 40px #00f7ff;
+}
+
+.subtitle{
+    color:#ff1ea8;
+    letter-spacing:8px;
+    margin-top:10px;
+    margin-bottom:45px;
+    text-shadow:0 0 15px #ff1ea8;
+}
+
+.start-btn{
+    border:1px solid #00f7ff;
+    background:rgba(0,247,255,.08);
+    color:#00f7ff;
+
+    padding:16px 55px;
+
+    font-size:18px;
+    font-weight:bold;
+    letter-spacing:4px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 0 15px rgba(0,247,255,.4),
+        inset 0 0 15px rgba(0,247,255,.05);
+
+    transition:.2s;
+}
+
+.start-btn:hover{
+    background:#00f7ff;
+    color:#02030a;
+
+    box-shadow:
+        0 0 20px #00f7ff,
+        0 0 50px #00f7ff;
+}
+
+.menu-info{
+    margin-top:30px;
+    color:#888;
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    pointer-events:none;
+    display:none;
+    color:white;
+}
+
+.score{
+    position:absolute;
+    top:25px;
+    left:30px;
+
+    font-size:24px;
+    font-weight:bold;
+
+    text-shadow:
+        0 0 10px #00f7ff;
+}
+
+.speed{
+    position:absolute;
+    top:65px;
+    left:30px;
+
+    color:#00f7ff;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+#muteBtn{
+    pointer-events:auto;
+
+    position:absolute;
+    top:25px;
+    right:30px;
+
+    padding:10px 18px;
+
+    background:rgba(0,0,0,.5);
+    color:#00f7ff;
+
+    border:1px solid #00f7ff;
+
+    cursor:pointer;
+
+    font-size:12px;
+    letter-spacing:2px;
+}
+
+#muteBtn:hover{
+    background:#00f7ff;
+    color:#000;
+}
+
+/* =========================
+   GAME OVER
+========================= */
+
+#gameOver{
+    position:fixed;
+    inset:0;
+    z-index:30;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+
+    background:rgba(0,0,0,.75);
+
+    color:white;
+}
+
+#gameOver h2{
+    font-size:60px;
+    letter-spacing:8px;
+
+    color:#ff1e55;
+
+    text-shadow:
+        0 0 10px #ff1e55,
+        0 0 30px #ff1e55;
+}
+
+.final-score{
+    margin:20px;
+    color:#00f7ff;
+    font-size:20px;
+}
+
+.restart-btn{
+    padding:14px 35px;
+
+    border:1px solid #ff1ea8;
+
+    background:rgba(255,30,168,.08);
+
+    color:#ff1ea8;
+
+    cursor:pointer;
+
+    letter-spacing:3px;
+}
+
+.restart-btn:hover{
+    background:#ff1ea8;
+    color:#000;
+
+    box-shadow:0 0 30px #ff1ea8;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+.mobile-controls{
+    display:none;
+
+    position:absolute;
+    bottom:25px;
+    left:0;
+    right:0;
+
+    justify-content:space-between;
+
+    padding:0 30px;
+    pointer-events:auto;
+}
+
+.mobile-btn{
+    width:70px;
+    height:70px;
+
+    border-radius:50%;
+
+    border:1px solid #00f7ff;
+
+    background:rgba(0,247,255,.1);
+
+    color:#00f7ff;
+
+    font-size:25px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    user-select:none;
+}
+
+@media(max-width:700px){
+
+    .logo{
+        font-size:42px;
+        letter-spacing:7px;
+    }
+
+    .subtitle{
+        font-size:10px;
+        letter-spacing:4px;
+    }
+
+    .mobile-controls{
+        display:flex;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOADING
+========================= -->
+
+<div id="loading">
+
+    <h1>PUNK DRIVE</h1>
+
+    <div class="loader-bar">
+        <div class="loader-fill" id="loaderFill"></div>
+    </div>
+
+    <div id="loadingText">
+        LOADING SYSTEM...
+    </div>
+
+</div>
+
+
+<!-- =========================
+     MENU
+========================= -->
+
+<div id="menu">
+
+    <div class="logo">
+        PUNK DRIVE
+    </div>
+
+    <div class="subtitle">
+        NEON HIGHWAY // NIGHT RUN
+    </div>
+
+    <button class="start-btn" id="startBtn">
+        START DRIVE
+    </button>
+
+    <div class="menu-info">
+        W / S = SPEED &nbsp;&nbsp; A / D = STEER &nbsp;&nbsp; SPACE = BOOST
+    </div>
+
+</div>
+
+
+<!-- =========================
+     HUD
+========================= -->
+
+<div id="hud">
+
+    <div class="score">
+        SCORE: <span id="score">0</span>
+    </div>
+
+    <div class="speed">
+        SPEED: <span id="speed">0</span> KM/H
+    </div>
+
+    <button id="muteBtn">
+        🔊 SOUND ON
+    </button>
+
+    <div class="mobile-controls">
+
+        <div class="mobile-btn" id="leftBtn">
+            ◀
+        </div>
+
+        <div class="mobile-btn" id="rightBtn">
+            ▶
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     GAME OVER
+========================= -->
+
+<div id="gameOver">
+
+    <h2>CRASHED</h2>
+
+    <div class="final-score">
+        SCORE: <span id="finalScore">0</span>
+    </div>
+
+    <button class="restart-btn" id="restartBtn">
+        RESTART
+    </button>
+
+</div>
+
+
+<!-- =========================
+     THREE.JS IMPORT MAP
+========================= -->
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
+
+<script type="module">
+
+import * as THREE from "three";
+
+import {
+    GLTFLoader
+} from "three/addons/loaders/GLTFLoader.js";
+
+
+/* =========================================================
+   BASIC SETUP
+========================================================= */
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x02030a);
+
+scene.fog = new THREE.FogExp2(
+    0x02030a,
+    0.025
+);
+
+
+const camera = new THREE.PerspectiveCamera(
+    65,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    500
+);
+
+camera.position.set(
+    0,
+    5,
+    12
+);
+
+
+const renderer = new THREE.WebGLRenderer({
+    antialias:true
+});
+
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio,2)
+);
+
+renderer.shadowMap.enabled = true;
+
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
+
+document.body.appendChild(
+    renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHTS
+========================================================= */
+
+const ambientLight =
+    new THREE.AmbientLight(
+        0x404080,
+        1.5
+    );
+
+scene.add(ambientLight);
+
+
+const moonLight =
+    new THREE.DirectionalLight(
+        0x88aaff,
+        2
+    );
+
+moonLight.position.set(
+    20,
+    40,
+    20
+);
+
+moonLight.castShadow = true;
+
+scene.add(moonLight);
+
+
+const cyanLight =
+    new THREE.PointLight(
+        0x00f7ff,
+        15,
+        80
+    );
+
+cyanLight.position.set(
+    -10,
+    5,
+    10
+);
+
+scene.add(cyanLight);
+
+
+const pinkLight =
+    new THREE.PointLight(
+        0xff1ea8,
+        15,
+        80
+    );
+
+pinkLight.position.set(
+    10,
+    5,
+    -10
+);
+
+scene.add(pinkLight);
+
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+const listener =
+    new THREE.AudioListener();
+
+camera.add(listener);
+
+
+const bgMusic =
+    new THREE.Audio(listener);
+
+
+const audioLoader =
+    new THREE.AudioLoader();
+
+
+let musicLoaded = false;
+
+let muted = false;
+
+
+/*
+    IMPORTANT:
+    assets/music.mp3
+*/
+
+
+    audioLoader.load("/Assets/mere%20mehboob.mp3",
+
+    function(buffer){
+
+        bgMusic.setBuffer(buffer);
+
+        bgMusic.setLoop(true);
+
+        bgMusic.setVolume(0.35);
+
+        musicLoaded = true;
+
+        console.log(
+            "🎵 BACKGROUND MUSIC LOADED"
+        );
+
+    },
+
+    function(progress){
+
+        if(progress.total){
+
+            const percent =
+                progress.loaded /
+                progress.total *
+                100;
+
+            console.log(
+                "Music:",
+                Math.round(percent) + "%"
+            );
+        }
+
+    },
+
+    function(error){
+
+        console.error(
+            "❌ MUSIC FAILED TO LOAD",
+            error
+        );
+
+        console.log(
+            "Check: /assets/music.mp3"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player =
+    new THREE.Group();
+
+player.position.set(
+    0,
+    0,
+    5
+);
+
+scene.add(player);
+
+
+let carModel = null;
+
+let carReady = false;
+
+
+const CAR_URL =
+    "/assets/player-car.glb";
+
+
+const gltfLoader =
+    new GLTFLoader();
+
+
+gltfLoader.load(
+
+    CAR_URL,
+
+    function(gltf){
+
+        carModel =
+            gltf.scene;
+
+        carModel.traverse(
+            function(object){
+
+                if(object.isMesh){
+
+                    object.castShadow = true;
+
+                    object.receiveShadow = true;
+
+                }
+
+            }
+        );
+
+
+        /* Auto scale */
+
+        const box =
+            new THREE.Box3()
+                .setFromObject(
+                    carModel
+                );
+
+
+        const size =
+            new THREE.Vector3();
+
+
+        box.getSize(size);
+
+
+        const biggest =
+            Math.max(
+                size.x,
+                size.y,
+                size.z
+            );
+
+
+        const targetSize =
+            3.8;
+
+
+        const scale =
+            targetSize /
+            biggest;
+
+
+        carModel.scale.setScalar(
+            scale
+        );
+
+
+        /* Center */
+
+        box.setFromObject(
+            carModel
+        );
+
+
+        const center =
+            new THREE.Vector3();
+
+
+        box.getCenter(
+            center
+        );
+
+
+        carModel.position.x =
+            -center.x;
+
+
+        carModel.position.z =
+            -center.z;
+
+
+        carModel.position.y =
+            -box.min.y;
+
+
+        /*
+            If car faces backwards,
+            change Math.PI to 0.
+        */
+
+        carModel.rotation.y =
+            Math.PI;
+
+
+        player.add(
+            carModel
+        );
+
+
+        carReady = true;
+
+console.log("🚗 CAR MODEL LOADED");
+console.log("✅ SYSTEM READY");
+
+/* Loading screen hide */
+setTimeout(() => {
+
+    document.getElementById("loading").style.display = "none";
+
+    document.getElementById("menu").style.display = "flex";
+
+}, 500);
+
+    },
+
+    function(progress){
+
+        if(progress.total){
+
+            const percent =
+                progress.loaded /
+                progress.total *
+                100;
+
+
+            document.getElementById(
+                "loaderFill"
+            ).style.width =
+                percent + "%";
+        }
+
+    },
+
+    function(error){
+
+        console.error(
+            "❌ CAR MODEL ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "loadingText"
+        ).textContent =
+            "CAR MODEL FAILED";
+
+    }
+
+);
+
+
+/* =========================================================
+   ROAD
+========================================================= */
+
+const roadWidth = 18;
+
+const roadLength = 500;
+
+
+const roadGeometry =
+    new THREE.PlaneGeometry(
+        roadWidth,
+        roadLength
+    );
+
+
+const roadMaterial =
+    new THREE.MeshStandardMaterial({
+
+        color:0x080a12,
+
+        roughness:.8,
+
+        metalness:.1
+
+    });
+
+
+const road =
+    new THREE.Mesh(
+        roadGeometry,
+        roadMaterial
+    );
+
+
+road.rotation.x =
+    -Math.PI / 2;
+
+
+road.position.z =
+    -220;
+
+
+road.receiveShadow = true;
+
+
+scene.add(road);
+
+
+/* =========================================================
+   SIDE GROUND
+========================================================= */
+
+const groundGeometry =
+    new THREE.PlaneGeometry(
+        100,
+        500
+    );
+
+
+const groundMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x050611
+    });
+
+
+const leftGround =
+    new THREE.Mesh(
+        groundGeometry,
+        groundMaterial
+    );
+
+
+leftGround.rotation.x =
+    -Math.PI / 2;
+
+
+leftGround.position.set(
+    -55,
+    -0.02,
+    -220
+);
+
+
+scene.add(leftGround);
+
+
+const rightGround =
+    leftGround.clone();
+
+
+rightGround.position.x =
+    55;
+
+
+scene.add(rightGround);
+
+
+/* =========================================================
+   LANE MARKERS
+========================================================= */
+
+const laneMarkers = [];
+
+
+for(
+    let z = 20;
+    z > -500;
+    z -= 12
+){
+
+    for(
+        const x of [-3,3]
+    ){
+
+        const geo =
+            new THREE.BoxGeometry(
+                .12,
+                .025,
+                5
+            );
+
+
+        const mat =
+            new THREE.MeshBasicMaterial({
+                color:0xffffff
+            });
+
+
+        const marker =
+            new THREE.Mesh(
+                geo,
+                mat
+            );
+
+
+        marker.position.set(
+            x,
+            .03,
+            z
+        );
+
+
+        scene.add(marker);
+
+        laneMarkers.push(marker);
+
+    }
+
+}
+
+
+/* =========================================================
+   NEON ROAD EDGES
+========================================================= */
+
+const neonMaterial =
+    new THREE.MeshBasicMaterial({
+        color:0x00f7ff
+    });
+
+
+const edgeGeometry =
+    new THREE.BoxGeometry(
+        .15,
+        .08,
+        roadLength
+    );
+
+
+const leftEdge =
+    new THREE.Mesh(
+        edgeGeometry,
+        neonMaterial
+    );
+
+
+leftEdge.position.set(
+    -roadWidth/2,
+    .05,
+    -220
+);
+
+
+scene.add(leftEdge);
+
+
+const rightEdge =
+    leftEdge.clone();
+
+
+rightEdge.position.x =
+    roadWidth/2;
+
+
+scene.add(rightEdge);
+
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+const buildings = [];
+
+
+function createBuilding(
+    x,
+    z
+){
+
+    const width =
+        5 + Math.random()*8;
+
+    const height =
+        8 + Math.random()*30;
+
+    const depth =
+        5 + Math.random()*8;
+
+
+    const geometry =
+        new THREE.BoxGeometry(
+            width,
+            height,
+            depth
+        );
+
+
+    const material =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                new THREE.Color(
+                    0.015,
+                    0.02,
+                    0.06
+                ),
+
+            roughness:.8
+
+        });
+
+
+    const building =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+
+    building.position.set(
+        x,
+        height/2,
+        z
+    );
+
+
+    building.castShadow = true;
+
+
+    scene.add(building);
+
+
+    buildings.push(
+        building
+    );
+
+
+    /* Neon sign */
+
+    if(Math.random() > .35){
+
+        const signGeometry =
+            new THREE.BoxGeometry(
+                width*.55,
+                .15,
+                .05
+            );
+
+
+        const signMaterial =
+            new THREE.MeshBasicMaterial({
+
+                color:
+                    Math.random() > .5
+                    ? 0x00f7ff
+                    : 0xff1ea8
+
+            });
+
+
+        const sign =
+            new THREE.Mesh(
+                signGeometry,
+                signMaterial
+            );
+
+
+        sign.position.set(
+            x,
+            height*.65,
+            z - depth/2 - .04
+        );
+
+
+        scene.add(sign);
+
+    }
+
+}
+
+
+for(
+    let z = 20;
+    z > -500;
+    z -= 18
+){
+
+    createBuilding(
+        -15 - Math.random()*18,
+        z
+    );
+
+    createBuilding(
+        15 + Math.random()*18,
+        z
+    );
+
+}
+
+
+/* =========================================================
+   TRAFFIC
+========================================================= */
+
+const traffic = [];
+
+
+const trafficColors = [
+    0xff204e,
+    0x00eaff,
+    0xffa600,
+    0x8a2be2,
+    0x00ff88
+];
+
+
+function createTrafficCar(){
+
+    const group =
+        new THREE.Group();
+
+
+    const bodyGeometry =
+        new THREE.BoxGeometry(
+            2.2,
+            .8,
+            4
+        );
+
+
+    const bodyMaterial =
+        new THREE.MeshStandardMaterial({
+
+            color:
+                trafficColors[
+                    Math.floor(
+                        Math.random() *
+                        trafficColors.length
+                    )
+                ],
+
+            metalness:.5,
+
+            roughness:.35
+
+        });
+
+
+    const body =
+        new THREE.Mesh(
+            bodyGeometry,
+            bodyMaterial
+        );
+
+
+    body.position.y =
+        .65;
+
+
+    body.castShadow = true;
+
+
+    group.add(body);
+
+
+    /* roof */
+
+    const roofGeometry =
+        new THREE.BoxGeometry(
+            1.7,
+            .5,
+            1.8
+        );
+
+
+    const roof =
+        new THREE.Mesh(
+            roofGeometry,
+            bodyMaterial
+        );
+
+
+    roof.position.y =
+        1.25;
+
+
+    group.add(roof);
+
+
+    group.position.set(
+
+        [-6,0,6][
+            Math.floor(
+                Math.random()*3
+            )
+        ],
+
+        0,
+
+        -80 -
+        Math.random()*250
+
+    );
+
+
+    scene.add(group);
+
+
+    traffic.push(group);
+
+}
+
+
+for(
+    let i=0;
+    i<8;
+    i++
+){
+
+    createTrafficCar();
+
+}
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+let gameStarted = false;
+
+let gameOver = false;
+
+
+let score = 0;
+
+let speed = 0;
+
+let maxSpeed = 1.1;
+
+
+let playerLane = 0;
+
+let targetX = 0;
+
+
+let keys = {
+
+    w:false,
+
+    s:false,
+
+    a:false,
+
+    d:false,
+
+    space:false
+
+};
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.code === "KeyW")
+            keys.w = true;
+
+        if(event.code === "KeyS")
+            keys.s = true;
+
+        if(event.code === "KeyA")
+            keys.a = true;
+
+        if(event.code === "KeyD")
+            keys.d = true;
+
+        if(event.code === "Space")
+            keys.space = true;
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    function(event){
+
+        if(event.code === "KeyW")
+            keys.w = false;
+
+        if(event.code === "KeyS")
+            keys.s = false;
+
+        if(event.code === "KeyA")
+            keys.a = false;
+
+        if(event.code === "KeyD")
+            keys.d = false;
+
+        if(event.code === "Space")
+            keys.space = false;
+
+    }
+);
+
+
+/* =========================================================
+   MOBILE CONTROLS
+========================================================= */
+
+document.getElementById(
+    "leftBtn"
+).addEventListener(
+    "touchstart",
+    function(){
+
+        targetX -= 6;
+
+    }
+);
+
+
+document.getElementById(
+    "rightBtn"
+).addEventListener(
+    "touchstart",
+    function(){
+
+        targetX += 6;
+
+    }
+);
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+document.getElementById(
+    "startBtn"
+).addEventListener(
+    "click",
+    function(){
+
+        if(!carReady){
+
+            alert(
+                "Car is still loading..."
+            );
+
+            return;
+
+        }
+
+
+        gameStarted = true;
+
+        gameOver = false;
+
+
+        document.getElementById(
+            "menu"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "loading"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "hud"
+        ).style.display =
+            "block";
+
+
+        /*
+            Browser audio policy:
+            start music after user click.
+        */
+
+        if(
+            musicLoaded &&
+            !muted
+        ){
+
+            if(
+                listener.context.state ===
+                "suspended"
+            ){
+
+                listener.context.resume();
+
+            }
+
+
+            if(!bgMusic.isPlaying){
+
+                bgMusic.play();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MUTE
+========================================================= */
+
+document.getElementById(
+    "muteBtn"
+).addEventListener(
+    "click",
+    function(){
+
+        muted = !muted;
+
+
+        if(muted){
+
+            bgMusic.setVolume(0);
+
+            this.textContent =
+                "🔇 SOUND OFF";
+
+        }else{
+
+            bgMusic.setVolume(.35);
+
+            this.textContent =
+                "🔊 SOUND ON";
+
+
+            if(
+                musicLoaded &&
+                !bgMusic.isPlaying
+            ){
+
+                if(
+                    listener.context.state ===
+                    "suspended"
+                ){
+
+                    listener.context.resume();
+
+                }
+
+                bgMusic.play();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   COLLISION
+========================================================= */
+
+function checkCollision(){
+
+    const playerBox =
+        new THREE.Box3()
+            .setFromObject(
+                player
+            );
+
+
+    playerBox.expandByScalar(
+        -0.5
+    );
+
+
+    for(
+        const car of traffic
+    ){
+
+        const carBox =
+            new THREE.Box3()
+                .setFromObject(
+                    car
+                );
+
+
+        if(
+            playerBox.intersectsBox(
+                carBox
+            )
+        ){
+
+            endGame();
+
+            return;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   END GAME
+========================================================= */
+
+function endGame(){
+
+    if(gameOver)
+        return;
+
+
+    gameOver = true;
+
+    gameStarted = false;
+
+
+    if(bgMusic.isPlaying){
+
+        bgMusic.pause();
+
+    }
+
+
+    document.getElementById(
+        "hud"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "gameOver"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        Math.floor(score);
+
+}
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+document.getElementById(
+    "restartBtn"
+).addEventListener(
+    "click",
+    function(){
+
+        score = 0;
+
+        speed = 0;
+
+        targetX = 0;
+
+        player.position.x = 0;
+
+
+        traffic.forEach(
+            function(car){
+
+                car.position.z =
+                    -80 -
+                    Math.random()*250;
+
+                car.position.x =
+                    [-6,0,6][
+                        Math.floor(
+                            Math.random()*3
+                        )
+                    ];
+
+            }
+        );
+
+
+        gameOver = false;
+
+        gameStarted = true;
+
+
+        document.getElementById(
+            "gameOver"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "hud"
+        ).style.display =
+            "block";
+
+
+        if(
+            musicLoaded &&
+            !muted
+        ){
+
+            if(
+                listener.context.state ===
+                "suspended"
+            ){
+
+                listener.context.resume();
+
+            }
+
+
+            if(!bgMusic.isPlaying){
+
+                bgMusic.play();
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+const clock =
+    new THREE.Clock();
+
+
+function update(){
+
+    const delta =
+        Math.min(
+            clock.getDelta(),
+            .05
+        );
+
+
+    if(!gameStarted)
+        return;
+
+
+    /* ---------------------
+       SPEED
+    --------------------- */
+
+    if(keys.w){
+
+        speed +=
+            delta * .8;
+
+    }else{
+
+        speed -=
+            delta * .35;
+
+    }
+
+
+    if(keys.s){
+
+        speed -=
+            delta * 1.2;
+
+    }
+
+
+    if(keys.space){
+
+        speed +=
+            delta * 1.4;
+
+    }
+
+
+    speed =
+        THREE.MathUtils.clamp(
+            speed,
+            .15,
+            maxSpeed +
+            (keys.space ? .9 : 0)
+        );
+
+
+    /* ---------------------
+       STEERING
+    --------------------- */
+
+    if(keys.a){
+
+        targetX -=
+            delta * 9;
+
+    }
+
+
+    if(keys.d){
+
+        targetX +=
+            delta * 9;
+
+    }
+
+
+    targetX =
+        THREE.MathUtils.clamp(
+            targetX,
+            -7,
+            7
+        );
+
+
+    player.position.x =
+        THREE.MathUtils.lerp(
+            player.position.x,
+            targetX,
+            .12
+        );
+
+
+    /* ---------------------
+       CAR TILT
+    --------------------- */
+
+    if(carModel){
+
+        const steer =
+            targetX -
+            player.position.x;
+
+
+        carModel.rotation.z =
+            THREE.MathUtils.lerp(
+                carModel.rotation.z,
+                -steer * .08,
+                .1
+            );
+
+    }
+
+
+    /* ---------------------
+       ROAD MARKERS
+    --------------------- */
+
+    for(
+        const marker of laneMarkers
+    ){
+
+        marker.position.z +=
+            speed * 55 * delta;
+
+
+        if(
+            marker.position.z > 30
+        ){
+
+            marker.position.z =
+                -500;
+
+        }
+
+    }
+
+
+    /* ---------------------
+       TRAFFIC
+    --------------------- */
+
+    for(
+        const car of traffic
+    ){
+
+        car.position.z +=
+            speed * 45 * delta;
+
+
+        /*
+            Random traffic lane
+        */
+
+        if(
+            car.position.z > 30
+        ){
+
+            car.position.z =
+                -300 -
+                Math.random()*200;
+
+
+            car.position.x =
+                [-6,0,6][
+                    Math.floor(
+                        Math.random()*3
+                    )
+                ];
+
+        }
+
+    }
+
+
+    /* ---------------------
+       SCORE
+    --------------------- */
+
+    score +=
+        speed *
+        delta *
+        10;
+
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        Math.floor(score);
+
+
+    document.getElementById(
+        "speed"
+    ).textContent =
+        Math.floor(
+            speed * 110
+        );
+
+
+    /* ---------------------
+       COLLISION
+    --------------------- */
+
+    checkCollision();
+
+
+    /* ---------------------
+       CAMERA
+    --------------------- */
+
+    const desiredCameraX =
+        player.position.x *
+        .45;
+
+
+    camera.position.x =
+        THREE.MathUtils.lerp(
+            camera.position.x,
+            desiredCameraX,
+            .06
+        );
+
+
+    camera.position.y =
+        THREE.MathUtils.lerp(
+            camera.position.y,
+            4.8,
+            .05
+        );
+
+
+    camera.lookAt(
+        player.position.x,
+        1.2,
+        player.position.z - 12
+    );
+
+}
+
+
+/* =========================================================
+   ANIMATION LOOP
+========================================================= */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+animate();
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+```
